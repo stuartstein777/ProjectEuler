@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProjectEuler;
 
 namespace Tests
@@ -9,31 +7,38 @@ namespace Tests
 	public class UnitTest1
 	{
 		[TestMethod]
-		public void TestRangeReturnsInts()
+		public void TestPrimeNumberSieve()
 		{
-			int upperBound = 100;
-			IEnumerable<int> range = PrimeNumberSieve.GetRange(upperBound);
+			const ulong upperBound = 30;
+			var sieve = new PrimeNumberSieve();
+			var primes = sieve.Sieve(upperBound);
 
-			int y = 1;
-			foreach(int x in range)
-			{
-				Assert.AreEqual(x, y);
-				y++;
-			}
+			Assert.AreEqual(2ul, primes[0]);
+			Assert.AreEqual(3ul, primes[1]);
+			Assert.AreEqual(5ul, primes[2]);
+			Assert.AreEqual(7ul, primes[3]);
+			Assert.AreEqual(11ul, primes[4]);
+			Assert.AreEqual(13ul, primes[5]);
+			Assert.AreEqual(17ul, primes[6]);
+			Assert.AreEqual(19ul, primes[7]);
+			Assert.AreEqual(23ul, primes[8]);
+			Assert.AreEqual(29ul, primes[9]);
+			Assert.AreEqual(10, primes.Count);
+
 		}
 
 		[TestMethod]
-		public void TestRangeReturnsLongs()
+		public void Test5IsPrime()
 		{
-			long upperBound = 100;
-			IEnumerable<long> range = PrimeNumberSieve.GetRange(upperBound);
+			var sieve = new PrimeNumberSieve();
+			Assert.IsTrue(sieve.IsPrime(5));
+		}
 
-			long y = 1;
-			foreach (long x in range)
-			{
-				Assert.AreEqual(x, y);
-				y++;
-			}
+		[TestMethod]	
+		public void Test25IsNotPrime()
+		{
+			var sieve = new PrimeNumberSieve();
+			Assert.IsFalse(sieve.IsPrime(25));
 		}
 
 		[TestMethod]

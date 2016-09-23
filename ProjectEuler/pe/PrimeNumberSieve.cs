@@ -1,79 +1,57 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ProjectEuler
 {
-	public static class PrimeNumberSieve
+	public class PrimeNumberSieve
 	{
-		//public static IList<ulong> Sieve(ulong upperBound) 
-		//{
-		//	IList<ulong> primes = GetRange(upperBound);
-
-		//	for(ulong x = 2; x < Math.Sqrt(upperBound); x++)
-		//	{
-		//		ulong y = x;
-		//		while (y < upperBound)
-		//		{
-		//			primes.Remove(y);
-		//			y += y;
-					
-		//		}
-		//	}
-
-		//	return primes;
-		//}
-
-		public static bool IsPrime(ulong x)
+		public IList<ulong> Sieve(ulong upperBound)
 		{
-			ulong y = 2;
+			var primes = GetRangeInclusive(upperBound);
 
-			while(x % y != 0)
+			for(var x = 0; x < primes.Count; x++)
 			{
-				return true;
-			}
+				var y = primes[x];
 
-			return false;
+				if(y == 0) continue;
+
+				var locationStep = (ulong)x;
+
+				if (IsPrime(y))
+				{
+					do
+					{
+						locationStep += y;
+						if(locationStep < (ulong)primes.Count)
+							primes[(int)locationStep] = 0;
+
+					} while (locationStep < (ulong)primes.Count);
+				}
+			}
+			return primes.Select(x => x).Where(x => x != 0).ToList();
 		}
 
-		public static IEnumerable<T> GetRange<T>(T upperBound)
+		public bool IsPrime(ulong x)
 		{
-			IList<T> range = new List<T>();
-
-			T x = One<T>();
-
-			while(AreEqual(upperBound, x))
+			for(ulong c = 2; c <= Math.Sqrt(x); c++)
 			{
+				if(x % c == 0)
+					return false;
+			}
+
+			return true;
+		}
+
+		private IList<ulong> GetRangeInclusive(ulong upperBound)
+		{
+			var range = new List<ulong>();
+			
+			for (ulong x = 2; x <= upperBound; x++)
 				range.Add(x);
-				x = Add(x, One<T>());
-			}
 
-			return range.AsEnumerable();
-		}
-
-		private static T Zero<T>()
-		{
-			return (dynamic)0;
-		}
-
-		private static T One<T>()
-		{
-			return (dynamic)1;
-		}
-
-		private static T Add<T>(T x, T y)
-		{
-			dynamic a = x;
-			dynamic b = y;
-
-			return a + b;
-		}
-
-		private static bool AreEqual<T>(T x, T y)
-		{
-			dynamic a = x;
-			dynamic b = y;
-
-			return a == b;
+			return range;
 		}
 	}
 }
