@@ -7,7 +7,7 @@ namespace ProjectEuler
 	{
 		private readonly Stopwatch _stopWatch = new Stopwatch();
 
-		public string TimeExecution(Action  problem)
+		public string TimeExecution(Action problem)
 		{
 			_stopWatch.Start();
 			problem();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,6 +38,18 @@ namespace ProjectEuler
 		public static ulong Sum(this IEnumerable<ulong> source)
 		{
 			return source.Aggregate((x, y) => x + y);
+		}
+
+		public static int FindNumberOfFactors(long toFactor)
+		{
+			int numFactors = 0;
+
+			for (long i = 1; i < Math.Sqrt(toFactor); i++)
+			{
+				if (toFactor % i == 0)
+					numFactors++;
+			}
+			return numFactors * 2;
 		}
 	}
 }
