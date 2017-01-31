@@ -28,6 +28,7 @@ namespace ProjectEuler
 			Console.WriteLine("\t : " + timing.TimeExecution(Problem16));   // 1366
 			Console.WriteLine("\t : " + timing.TimeExecution(Problem17));   // 21124
 			Console.WriteLine("\t : " + timing.TimeExecution(Problem18));   // 1074
+			Console.WriteLine("\t : " + timing.TimeExecution(Problem19));   // 171
 			Console.WriteLine("\t : " + timing.TimeExecution(Problem34));   // 40730
 			Console.WriteLine("Fin.");
 			Console.ReadKey();
@@ -1276,6 +1277,34 @@ namespace ProjectEuler
 				}
 			}
 			AnswerWriter.DisplayAnswer(t.RowColvalue(0, 0).ToString(), 18);
+		}
+		/// <summary>
+		/// You are given the following information, but you may prefer to do some research for yourself.
+		///
+		/// 1 Jan 1900 was a Monday.
+		/// Thirty days has September,
+		/// April, June and November.
+		/// All the rest have thirty-one,
+		/// Saving February alone,
+		/// Which has twenty-eight, rain or shine.
+		/// And on leap years, twenty-nine.
+		/// A leap year occurs on any year evenly divisible by 4, but not on a century unless it is divisible by 400.
+		/// How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 to 31 Dec 2000)?
+		/// </summary>
+		private static void Problem19()
+		{
+			var counter = 0;
+			var startDate = new DateTime(1901, 1, 1);
+			var targetDate = new DateTime(2000, 12, 31);
+
+			while (startDate.Date != targetDate.Date)
+			{
+				startDate = startDate.AddDays(1);
+				var dayOfTheWeek = startDate.DayOfWeek;
+				if (dayOfTheWeek == DayOfWeek.Sunday && startDate.Day == 1)
+					counter++;
+			}
+			AnswerWriter.DisplayAnswer(counter.ToString(), 19);
 		}
 		/// <summary>
 		/// 145 is a curious number, as 1! + 4! + 5! = 1 + 24 + 120 = 145.
