@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Pipes;
 using System.Linq;
+using System.Numerics;
 
 namespace ProjectEuler
 {
@@ -24,6 +24,10 @@ namespace ProjectEuler
 			Console.WriteLine("\t : " + timing.TimeExecution(Problem12));   // 76576500
 			Console.WriteLine("\t : " + timing.TimeExecution(Problem13));   // 5537376230
 			Console.WriteLine("\t : " + timing.TimeExecution(Problem14));   // 837799
+			Console.WriteLine("\t : " + timing.TimeExecution(Problem15));   // 837799
+			Console.WriteLine("\t : " + timing.TimeExecution(Problem16));   // 1366
+			Console.WriteLine("\t : " + timing.TimeExecution(Problem17));   // 21124
+			Console.WriteLine("\t : " + timing.TimeExecution(Problem18));   // 1074
 			Console.WriteLine("\t : " + timing.TimeExecution(Problem34));   // 40730
 			Console.WriteLine("Fin.");
 			Console.ReadKey();
@@ -36,13 +40,8 @@ namespace ProjectEuler
 		/// </summary>
 		private static void Problem1()
 		{
-			var answer = 0;
-			for (var x = 1; x < 1000; x++)
-				if (x % 3 == 0 || x % 5 == 0) answer += x;
-			
-			// Solved, verify answer.
-			if(answer != 233168) throw new NotImplementedException();
-
+			var numberList = Enumerable.Range(1, 999);
+			var answer = numberList.Where(x => ((Func<int, bool>)(y => y % 3 == 0))(x) || ((Func<int, bool>)(y => y % 5 == 0))(x)).Sum();
 			AnswerWriter.DisplayAnswer(answer.ToString(), 1);
 		}
 
@@ -96,7 +95,7 @@ namespace ProjectEuler
 
 			while (a > 100)
 			{
-				string b = a + HelperMethods.Reverse(a.ToString());
+				var b = a + HelperMethods.Reverse(a.ToString());
 				var c = Convert.ToUInt32(b);
 
 				if (HelperMethods.FindHighestFactor(c, 100, 999) > 99)
@@ -1144,6 +1143,141 @@ namespace ProjectEuler
 		}
 
 		/// <summary>
+		/// Starting in the top left corner of a 2×2 grid, and only being able to move to the right and down, there are exactly 6 routes to the 
+		/// bottom right corner.
+		/// 
+		/// How many such routes are there through a 20×20 grid?
+		/// </summary>
+		private static void Problem15()
+		{
+			double r = 1;
+			double d;
+			double k = 20;
+			double n = 40;
+
+			for (d = 1; d <= k; d++)
+			{
+				r *= n--;
+				r /= d;
+			}
+			AnswerWriter.DisplayAnswer(r.ToString(), 15);
+		}
+
+		/// <summary>
+		/// 2^15 = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.
+		///
+		/// What is the sum of the digits of the number 2^1000
+		/// </summary>
+		private static void Problem16()
+		{
+			BigInteger answer = 0;
+			var x = BigInteger.Pow(2, 1000);
+			while (x > 0)
+			{
+				var r = BigInteger.Remainder(x, 10);
+				answer += r;
+				x = BigInteger.Divide(x, 10);
+			}
+			AnswerWriter.DisplayAnswer(answer.ToString(), 16);
+		}
+		private static void Problem17()
+		{
+			var c = 0;
+
+			for (var x = 1; x <= 1000; x++)
+			{
+				var s = GetNumber(x, string.Empty);
+				c += s.Length;
+			}
+			AnswerWriter.DisplayAnswer(c.ToString(), 17);
+		}
+		private static string GetNumber(int num, string currentString)
+		{
+			var numbersOneToNineteen = new[]
+			{
+				"One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+				"Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen",
+				"Eighteen", "Nineteen"
+			};
+			var decadals = new[] { "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
+			const string hundred = "Hundred";
+			const string thousand = "Thousand";
+
+			if (num > 0 && num < 20)
+				currentString += numbersOneToNineteen[num - 1];
+			else if (num >= 20 && num < 100)
+				currentString += decadals[num / 10 - 2] + "" + GetNumber(num % 10, currentString);
+			else if (num >= 100 && num < 1000)
+			{
+				currentString = GetNumber(num / 100, currentString) + "" + hundred;
+				if (num % 100 > 0)
+					currentString += "and" + GetNumber(num % 100, string.Empty);
+			}
+			else if (num >= 1000)
+				currentString = GetNumber(num / 1000, currentString) + "" + thousand;
+
+			return currentString;
+		}
+		/// <summary>
+		/// By starting at the top of the triangle below and moving to adjacent numbers on the row below, the maximum total from top to bottom is 23.
+		///
+		///    3
+		///    7 4
+		///    2 4 6
+		///    8 5 9 3
+		///
+		///	That is, 3 + 7 + 4 + 9 = 23.
+		///
+		///	Find the maximum total from top to bottom of the triangle below:
+		///
+		///    75
+		///    95 64
+		///    17 47 82
+		///    18 35 87 10
+		///    20 04 82 47 65
+		///    19 01 23 75 03 34
+		///    88 02 77 73 07 63 67
+		///    99 65 04 28 06 16 70 92
+		///    41 41 26 56 83 40 80 70 33
+		///    41 48 72 33 47 32 37 16 94 29
+		///    53 71 44 65 25 43 91 52 97 51 14
+		///    70 11 33 28 77 73 17 78 39 68 17 57
+		///    91 71 52 38 17 14 91 43 58 50 27 29 48
+		///    63 66 04 68 89 53 67 30 73 16 69 87 40 31
+		///    04 62 98 27 23 09 70 98 73 93 38 53 60 04 23
+		///
+		///	NOTE: As there are only 16384 routes, it is possible to solve this problem by trying
+		/// every route.However, Problem 67, is the same challenge with a triangle containing
+		/// one-hundred rows; it cannot be solved by brute force, and requires a clever method! ;o)
+		///
+		/// Solution
+		///-----------------------------------------------
+		/// Start from the bottom and work up, flattening the triangle as you go.
+		///      
+		/// e.g.
+		///          1               1           6
+		///         1 2      >      3 5      >  3 5
+		///        1 2 3           1 2 3       1 2 3
+		/// 
+		/// Start at end row minus 1, compare the node below left and below right. Add whichever is
+		/// greater to the current node. Keep going till you are at the top. The value left on the top
+		/// will be maximum sum.
+		/// </summary>
+		private static void Problem18()
+		{
+			var t = new Problem18Triangle();
+			for (var c = t.RowCount - 2; c >= 0; c--)
+			{
+				for (var x = 0; x < t.ItemsInRow(c); x++)
+				{
+					var l = t.RowColvalue(c + 1, x);
+					var r = t.RowColvalue(c + 1, x + 1);
+					t.AddValueToCol(l > r ? l : r, c, x);
+				}
+			}
+			AnswerWriter.DisplayAnswer(t.RowColvalue(0, 0).ToString(), 18);
+		}
+		/// <summary>
 		/// 145 is a curious number, as 1! + 4! + 5! = 1 + 24 + 120 = 145.
 		///
 		/// Find the sum of all numbers which are equal to the sum of the factorial of their digits.
@@ -1189,3 +1323,4 @@ namespace ProjectEuler
 		}
 	}
 }
+
